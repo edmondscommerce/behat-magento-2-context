@@ -1,6 +1,6 @@
 {
   "name": "edmondscommerce/behat-magento-2-context",
-  "description": "A Behat Context for Magento",
+  "description": "A Behat Context for Magento 2",
   "keywords": [
     "Behat",
     "Testing",
