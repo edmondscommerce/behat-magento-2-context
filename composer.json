@@ -1,0 +1,28 @@
+{
+  "name": "edmondscommerce/behat-magento-2-context",
+  "description": "A Behat Context for Magento",
+  "keywords": [
+    "Behat",
+    "Testing",
+    "Magento 2"
+  ],
+  "homepage": "https://www.edmondscommerce.co.uk",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "edmondscommerce",
+      "email": "info@edmondscommerce.co.uk"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "behat/behat": "~3.0",
+    "edmondscommerce/behat-html-context": "dev-master",
+    "edmondscommerce/behat-javascript-context": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "EdmondsCommerce\\BehatMagentoTwoContext\\": "src/"
+    }
+  }
+}
