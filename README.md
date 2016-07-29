@@ -1,7 +1,7 @@
 #Magento Two Context
 ## By [Edmonds Commerce](https://www.edmondscommerce.co.uk)
 
-Behat contexts to aid testing of Magento 2.x sites
+Behat contexts to aid testing of Magento 2.x sites on both the frontend and admin via blackbox methods only
 
 ### Installation
 
