@@ -7,7 +7,7 @@ Behat contexts to aid testing of Magento 2.x sites
 
 Install via composer
 
-"edmondscommerce/behat-magento-2-context": "~1.1"
+composer require edmondscommerce/behat-magento-2-context
 
 
 ### Include Contexts in Behat Configuration
