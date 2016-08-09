@@ -110,6 +110,8 @@ class AdminContext extends AbstractMagentoContext
         $this->_jsEvents->iWaitForDocumentReady();
         $this->assertSession()->pageTextContains('New Invoice');
         //.submit-button
+        $this->getSession()->getPage()->find('css', '.submit-button')->click();
+        $this->getSession()->wait(10000);
     }
 
     /**
@@ -150,13 +152,16 @@ class AdminContext extends AbstractMagentoContext
         }
     }
 
+    /**
+     * @Then /^(?:|I )should see a credit memo/
+     */
     public function iShouldSeeCreditMemos()
     {
         $this->iClickOnTheCreditMemoTab();
         $this->getSession()->wait(5000);
 
         $rows = $this->getSession()
-            ->getPage()->findAll('css', '#sales_order_view_tabs_order_info_content .data-grid tbody tr');
+            ->getPage()->findAll('css', '#sales_order_view_tabs_order_creditmemos_content .data-grid tbody tr');
 
         if(empty($rows)) {
             throw new \Exception('Could not see any credit memos');
@@ -171,7 +176,7 @@ class AdminContext extends AbstractMagentoContext
         $this->assertSession()->pageTextContains('Invoice Totals');
         $this->getSession()->getPage()->find('css', '#capture')->click();
         $this->_jsEvents->iWaitForDocumentReady();
-        $this->getSession()->getPage()->find('css', 'button[title="Refund Offline"]')->click();
+        $this->getSession()->getPage()->find('css', 'button[title="Refund"]')->click();
         $this->_jsEvents->iWaitForDocumentReady();
     }
 

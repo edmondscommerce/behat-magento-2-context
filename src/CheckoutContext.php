@@ -76,10 +76,7 @@ class CheckoutContext extends AbstractMagentoContext
      */
     public function iShouldSeeTheOrderSuccess()
     {
-        $title = trim($this->getSession()->getPage()->find('css', 'title')->getText());
-        if($title != $this->getSucessPageTitle()) {
-            throw new \Exception(sprintf('Not got the expected success page title Expected: %s GOT: %s',$this->getSucessPageTitle(), $title));
-        }
+        $this->assertSession()->pageTextContains('Your order # is');
 
         $elements = $this->getSession()->getPage()->findAll('css', '.checkout-success');
 
