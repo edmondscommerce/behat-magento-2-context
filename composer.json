@@ -14,7 +14,6 @@
       "email": "info@edmondscommerce.co.uk"
     }
   ],
-  "minimum-stability": "dev",
   "require": {
     "behat/behat": "~3.0",
     "edmondscommerce/behat-html-context": "dev-master",
