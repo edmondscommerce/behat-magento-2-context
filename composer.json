@@ -16,8 +16,8 @@
   ],
   "require": {
     "behat/behat": "~3.0",
-    "edmondscommerce/behat-html-context": "dev-master",
-    "edmondscommerce/behat-javascript-context": "dev-master"
+    "edmondscommerce/behat-html-context": "dev-master@dev",
+    "edmondscommerce/behat-javascript-context": "dev-master@dev"
   },
   "autoload": {
     "psr-4": {
