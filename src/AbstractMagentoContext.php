@@ -22,8 +22,9 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
         RedirectionContext::class      => '_redirect',
         JavascriptEventsContext::class => '_jsEvents',
         HTMLContext::class             => '_html',
+        MinkContext::class             => '_mink'
     ];
-
+    
     /**
      * @var JavascriptEventsContext
      */
@@ -39,6 +40,12 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
      */
     protected $_html;
 
+    /**
+     * @var MinkContext
+     */
+    protected $_mink;
+
+
     /** @BeforeSuite
      * @param BeforeSuiteScope $scope
      *
@@ -49,7 +56,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
         $environment = $scope->getEnvironment();
         if (!$environment->getSuite()->hasSetting('parameters'))
         {
-            throw new \Exception('You must set the parameters scetion of the behat.yml');
+            throw new \Exception('You must set the parameters section of the behat.yml');
         }
         $parameters = $environment->getSuite()->getSetting('parameters');
         if (!isset($parameters['magentoSettings']))

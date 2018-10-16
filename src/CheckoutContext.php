@@ -1,6 +1,10 @@
 <?php
 namespace EdmondsCommerce\BehatMagentoTwoContext;
 
+use Behat\Behat\Context\Context;
+use Behat\Behat\Context\SnippetAcceptingContext;
+use Behat\Behat\Tester\Exception\PendingException;
+
 class CheckoutContext extends AbstractMagentoContext
 {
     const CHECKOUT_SUCCESS_PAGE_TITLE_SETTING = 'successPageTitle';
@@ -15,17 +19,21 @@ class CheckoutContext extends AbstractMagentoContext
 
     /**
      * @Then I fill in a guest checkout shipping
+     * @throws \Behat\Mink\Exception\ElementNotFoundException
      */
     public function iFillInAGuestCheckoutShipping()
     {
-        $this->getSession()->wait(10000);
+        $this->iWaitForMagento2AjaxToFinish();
         $this->getSession()->getPage()->find('css','#customer-email')->setValue('behatguest@example.com');
         $shippingForm = $this->getSession()->getPage()->find('css', '#co-shipping-form');
 
-        $inputs      = $shippingForm->findAll('css', 'input');
+        $inputs = $shippingForm->findAll('css', 'input');
 
         foreach ($inputs as $input) {
             switch ($input->getAttribute('name')) {
+                case 'username':
+                    $value = 'behat@example.com';
+                    break;
                 case 'firstname':
                     $value = 'Behat';
                     break;
@@ -55,24 +63,27 @@ class CheckoutContext extends AbstractMagentoContext
             }
             $input->setValue($value);
         }
-
-        $this->getSession()->getPage()->selectFieldOption('country_id', 'GB');
-        $this->getSession()->wait(1000);
+        $this->iWaitForMagento2AjaxToFinish();
     }
+
+
+
 
     /**
      * @Then I submit a guest checkout shipping
      */
     public function iSubmitAGuestCheckoutShipping()
     {
-        $this->getSession()->wait(10000);
         $this->iWaitForMagento2AjaxToFinish();
-        $this->_html->iClickOnTheFirstVisibleText('Next');
+        $xpath = '//form[@id=\'co-shipping-method-form\']';
+        $this->getSession()->getPage()->find('xpath',$xpath)->submit();
         $this->iWaitForMagento2AjaxToFinish();
     }
 
     /**
      * @Then I should see the order success page
+     * @throws \Behat\Mink\Exception\ResponseTextException
+     * @throws \Exception
      */
     public function iShouldSeeTheOrderSuccess()
     {
@@ -85,6 +96,15 @@ class CheckoutContext extends AbstractMagentoContext
         }
 
     }
+
+    /**
+     * @Then /^I should see the order cancelled page/
+     */
+    public function iShouldSeeTheOrderCancelledPage()
+    {
+        $this->getSession()->getPage()->find('xpath', '//span[contains(text(), \'Your order has been succesfully cancelled.\')]');
+    }
+
 
     private function getSucessPageTitle()
     {

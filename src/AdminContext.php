@@ -1,6 +1,8 @@
 <?php
 namespace EdmondsCommerce\BehatMagentoTwoContext;
 
+use Behat\Behat\Tester\Exception\PendingException;
+
 class AdminContext extends AbstractMagentoContext
 {
     protected $_amLoggedIn = false;
@@ -8,10 +10,13 @@ class AdminContext extends AbstractMagentoContext
     const ADMIN_URI = 'adminUri';
     const USER_NAME = 'userName';
     const PASSWORD = 'password';
+    const CREATED_EMAIL = 'createdEmail';
+    const CREATED_PASSWORD = 'createdPassword';
 
     private $_userName = '';
     private $_password = '';
     private $_adminUri = '';
+    private $_createdEmail = '';
 
     public function __construct()
     {
@@ -26,17 +31,24 @@ class AdminContext extends AbstractMagentoContext
         if (isset(self::$_magentoSetting[self::PASSWORD])) {
             $this->_password = self::$_magentoSetting[self::PASSWORD];
         }
+
+        if (isset(self::$_magentoSetting[self::CREATED_EMAIL])) {
+            $this->_createdEmail = self::$_magentoSetting[self::CREATED_EMAIL];
+        }
+
     }
 
     /**
      * @Given I log into the admin
+     * @throws \Behat\Mink\Exception\ElementNotFoundException
+     * @throws \Behat\Mink\Exception\ExpectationException
+     * @throws \Exception
      */
     public function iLogInToTheAdmin()
     {
         if (is_null($this->_userName) || is_null($this->_password)) {
             throw new \Exception('You must create the admin user first');
         }
-
         $this->visitPath($this->_adminUri);
         $this->getSession()->getPage()->fillField('username', $this->_userName);
         $this->getSession()->getPage()->fillField('login', $this->_password);
@@ -48,6 +60,7 @@ class AdminContext extends AbstractMagentoContext
 
     /**
      * @When I go to the orders page
+     * @throws \Exception
      */
     public function iGoToTheOrdersPage()
     {
@@ -178,6 +191,38 @@ class AdminContext extends AbstractMagentoContext
         $this->_jsEvents->iWaitForDocumentReady();
         $this->getSession()->getPage()->find('css', 'button[title="Refund"]')->click();
         $this->_jsEvents->iWaitForDocumentReady();
+    }
+
+
+    /**
+     * @Given /^I search for the created customer email$/
+     * @param $customerEmail
+     * @throws \Behat\Mink\Exception\ExpectationException
+     */
+    public function iSearchForTheCustomerName()
+    {
+        $this->_jsEvents->iWaitForAjaxToFinish();
+        $this->getSession()->getPage()->find('xpath', '//button[contains(text(),\'Filters\')]')->click();
+        $this->_mink->fillField('email', $this->_createdEmail);
+        $this->getSession()->getPage()->find('xpath', '//div[@class=\'admin__footer-main-actions\']//button[2]')->click();
+        $this->_html->findAllOrFail('xpath', '//div[contains(text(),\''. $this->_createdEmail . '\')]');
+        $this->_jsEvents->iWaitForAjaxToFinish();
+    }
+
+    /**
+     * @Given /^I am on the customers page$/
+     */
+    public function iAmOnTheCustomersPage(){
+        $this->visitPath('/' . $this->_adminUri . 'customer/index');
+        $this->_jsEvents->iWaitForDocumentReady();
+    }
+
+    /**
+     * @When /^I click on the first customers edit button$/
+     */
+    public function iClickOnTheFirstCustomersEditButton()
+    {
+        $this->getSession()->getPage()->find('xpath', '//a[@class=\'action-menu-item\']')->click();
     }
 
 }
