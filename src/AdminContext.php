@@ -1,4 +1,5 @@
 <?php
+
 namespace EdmondsCommerce\BehatMagentoTwoContext;
 
 use Behat\Behat\Tester\Exception\PendingException;
@@ -74,7 +75,7 @@ class AdminContext extends AbstractMagentoContext
 
         $found = $orderLinkOptionElement->getAttribute('href');
 
-        if(empty($found)) {
+        if (empty($found)) {
             throw new \Exception('Could not find the orders link');
         }
 
@@ -94,24 +95,24 @@ class AdminContext extends AbstractMagentoContext
             ->getPage()->findAll('css', 'table.data-grid tbody tr');
         $linkHref = '';
 
-        foreach($tableRows as $row) {
+        foreach ($tableRows as $row) {
             $html = $row->getHtml();
 
-            if(stripos($html, $orderRef) > 0) {
-                $linkElement = $row->find('css','a.action-menu-item');
-                if(stripos($linkElement->getAttribute('href'), 'view/order_id') > 0) {
+            if (stripos($html, $orderRef) > 0) {
+                $linkElement = $row->find('css', 'a.action-menu-item');
+                if (stripos($linkElement->getAttribute('href'), 'view/order_id') > 0) {
                     $linkHref = $linkElement->getAttribute('href');
                     break;
                 }
             }
         }
-        if(empty($linkHref)) {
+        if (empty($linkHref)) {
             throw new \Exception('Could not find the order');
         }
 
         $this->visitPath($linkHref);
         $this->_jsEvents->iWaitForDocumentReady();
-        $this->assertSession()->pageTextContains('# '.$orderRef);
+        $this->assertSession()->pageTextContains('# ' . $orderRef);
     }
 
     /**
@@ -156,7 +157,7 @@ class AdminContext extends AbstractMagentoContext
         $links = $this->getSession()
             ->getPage()->findAll('css', '#sales_order_view_tabs_order_invoices_content .data-grid tbody tr td a');
 
-        if(count($links) > 0) {
+        if (count($links) > 0) {
             $this->visitPath($links[0]->getAttribute('href'));
             $this->_jsEvents->iWaitForDocumentReady();
             $this->assertSession()->pageTextContains('Invoice Totals');
@@ -176,7 +177,7 @@ class AdminContext extends AbstractMagentoContext
         $rows = $this->getSession()
             ->getPage()->findAll('css', '#sales_order_view_tabs_order_creditmemos_content .data-grid tbody tr');
 
-        if(empty($rows)) {
+        if (empty($rows)) {
             throw new \Exception('Could not see any credit memos');
         }
     }
@@ -202,17 +203,19 @@ class AdminContext extends AbstractMagentoContext
     public function iSearchForTheCustomerName()
     {
         $this->_jsEvents->iWaitForAjaxToFinish();
+        $this->_html->waitformilliseconds(1000);
         $this->getSession()->getPage()->find('xpath', '//button[contains(text(),\'Filters\')]')->click();
         $this->_mink->fillField('email', $this->_createdEmail);
         $this->getSession()->getPage()->find('xpath', '//div[@class=\'admin__footer-main-actions\']//button[2]')->click();
-        $this->_html->findAllOrFail('xpath', '//div[contains(text(),\''. $this->_createdEmail . '\')]');
+        $this->_html->findAllOrFail('xpath', '//div[contains(text(),\'' . $this->_createdEmail . '\')]');
         $this->_jsEvents->iWaitForAjaxToFinish();
     }
 
     /**
      * @Given /^I am on the customers page$/
      */
-    public function iAmOnTheCustomersPage(){
+    public function iAmOnTheCustomersPage()
+    {
         $this->visitPath('/' . $this->_adminUri . 'customer/index');
         $this->_jsEvents->iWaitForDocumentReady();
     }
@@ -222,7 +225,7 @@ class AdminContext extends AbstractMagentoContext
      */
     public function iClickOnTheFirstCustomersEditButton()
     {
-        $this->getSession()->getPage()->find('xpath', '//a[@class=\'action-menu-item\']')->click();
+        $this->getSession()->getPage()->find('xpath', '(//a[@class=\'action-menu-item\'])[0]')->click();
     }
 
 }

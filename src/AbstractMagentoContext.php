@@ -1,4 +1,5 @@
 <?php
+
 namespace EdmondsCommerce\BehatMagentoTwoContext;
 
 use Behat\Behat\Context\Context;
@@ -19,12 +20,12 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
 
     /** @var array */
     protected $_contextsToInclude = [
-        RedirectionContext::class      => '_redirect',
+        RedirectionContext::class => '_redirect',
         JavascriptEventsContext::class => '_jsEvents',
-        HTMLContext::class             => '_html',
-        MinkContext::class             => '_mink'
+        HTMLContext::class => '_html',
+        MinkContext::class => '_mink'
     ];
-    
+
     /**
      * @var JavascriptEventsContext
      */
@@ -54,13 +55,11 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     public static function loadMagentoConfiguration(BeforeSuiteScope $scope)
     {
         $environment = $scope->getEnvironment();
-        if (!$environment->getSuite()->hasSetting('parameters'))
-        {
+        if (!$environment->getSuite()->hasSetting('parameters')) {
             throw new \Exception('You must set the parameters section of the behat.yml');
         }
         $parameters = $environment->getSuite()->getSetting('parameters');
-        if (!isset($parameters['magentoSettings']))
-        {
+        if (!isset($parameters['magentoSettings'])) {
             throw new \Exception('You must include the magentoSetting in the behat.yml file');
         }
         $magentoSetting = $parameters['magentoSettings'];
@@ -79,8 +78,7 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     {
         $environment = $scope->getEnvironment();
         $contexts = $this->_getArrayOfContexts();
-        foreach ($contexts as $context => $classVar)
-        {
+        foreach ($contexts as $context => $classVar) {
             $this->$classVar = $environment->getContext($context);
         }
     }
@@ -93,18 +91,15 @@ abstract class AbstractMagentoContext extends RawMinkContext implements Context,
     protected function _getArrayOfContexts()
     {
         $contexts = $this->_contextsToInclude;
-        if (!is_array($contexts) || empty($contexts))
-        {
+        if (!is_array($contexts) || empty($contexts)) {
             return [];
         }
 
         $excluded = isset($this->_contextsToExclude) ? $this->_contextsToExclude : [];
         $excluded[] = get_class($this);
 
-        foreach ($excluded AS $contextToExclude)
-        {
-            if (isset($contexts[$contextToExclude]))
-            {
+        foreach ($excluded AS $contextToExclude) {
+            if (isset($contexts[$contextToExclude])) {
                 unset($contexts[$contextToExclude]);
             }
         }

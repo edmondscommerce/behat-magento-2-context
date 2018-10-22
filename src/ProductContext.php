@@ -1,4 +1,5 @@
 <?php
+
 namespace EdmondsCommerce\BehatMagentoTwoContext;
 
 class ProductContext extends AbstractMagentoContext
@@ -9,17 +10,17 @@ class ProductContext extends AbstractMagentoContext
     const CATEGORY_URI = 'categoryUri';
     const GROUPED_URI = 'groupedUri';
 
+
+   
+
     /**
      * @Given I am on a simple product page remotely
      */
     public function iAmOnASimpleProductPage()
     {
-        if (isset(self::$_magentoSetting[self::SIMPLE_URI]))
-        {
+        if (isset(self::$_magentoSetting[self::SIMPLE_URI])) {
             $simpleURI = self::$_magentoSetting[self::SIMPLE_URI];
-        }
-        else
-        {
+        } else {
             $simpleURI = 'fusion-backpack.html';
         }
         $this->visitPath('/' . $simpleURI);
@@ -35,4 +36,42 @@ class ProductContext extends AbstractMagentoContext
         $this->_html->iClickOnTheFirstVisibleText('Add to Cart');
         $this->iWaitForMagento2AjaxToFinish();
     }
+
+    /**
+     * @Given /^I am on the product "([^"].*)" page$/
+     * @param $product
+     */
+    public function iAmOnTheProductPage($product)
+    {
+        $this->visitPath($product . '.html');
+    }
+
+    /**
+     * @Given /^I select the first option on the configurable product$/
+     */
+    public function iSelectTheFirstOptionOnTheConfigurableProduct()
+    {
+        // Add javascript to add a name to both option and select field
+        $script = <<<JS
+(function(){
+document.querySelector("div.control select").id = "select_test";
+document.getElementById("select_test").children[1].id = "option_test";
+})();
+JS;
+        $this->getSession()->executeScript($script);
+        $this->getSession()->getPage()->find('css', '#select_test')->click();
+        $optionText = $this->_mink->getSession()->getPage()->find('css', '#option_test')->getText();
+        $this->_mink->selectOption('select_test', $optionText);
+    }
+
+    /**
+     * @Given /^I update the quantity to "([^"]*)"$/
+     */
+    public function iUpdateTheQuantityTo($arg1)
+    {
+        $this->_mink->fillField('qty', $arg1);
+    }
+
+
+
 }

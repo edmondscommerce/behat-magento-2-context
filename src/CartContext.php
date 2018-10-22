@@ -7,7 +7,18 @@ use Behat\Mink\Exception\ExpectationException;
 
 class CartContext extends AbstractMagentoContext implements Context, SnippetAcceptingContext
 {
+    const TESTPRODUCTURI = 'testProductUri';
+
     private $productQty;
+    private $testProductName;
+
+    public function __construct()
+    {
+        if (isset(self::$_magentoSetting[self::TESTPRODUCTURI])){
+            $this->testProductName = str_replace('.html','', (self::$_magentoSetting[self::TESTPRODUCTURI]));
+        }
+    }
+
 
     /**
      * @Given I have my minicart open
@@ -29,9 +40,10 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
     }
 
     /**
-    * @When /^I click on the add to cart button$/
+     * @When /^I click on the add to cart button$/
      */
-    public function iClickOnTheAddToCartButton(){
+    public function iClickOnTheAddToCartButton()
+    {
 
     }
 
@@ -51,13 +63,10 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
      */
     public function clickOnClearShoppingCartButton()
     {
-        $text = $this->getSession()->getPage()->getText();
-        $xpath = '//*[contains(text(), "Clear Shopping Cart") or contains(text(), "Clear") or contains(text(), "You have no items in your shopping cart.")]';
-        $search = $this->getSession()->getPage()->find('xpath', $xpath);
-        if ($search === null) {
-            throw new ExpectationException('Could not find the clear shopping cart button', $this->getSession()->getDriver());
+        $clearBasket = $this->getSession()->getPage()->find('css', '#empty_cart_button');
+        if ($clearBasket) {
+            $clearBasket->click();
         }
-        $search->click();
     }
 
     /**
@@ -68,48 +77,35 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
     {
         $this->visitPath('/checkout/cart');
         // find clear shopping cart button
-        if($this->getSession()->getPage()->find('xpath', '//button[@id=\'empty_cart_button\']')){
+        if ($this->getSession()->getPage()->find('xpath', '//button[@id=\'empty_cart_button\']')) {
             $this->clickOnClearShoppingCartButton();
         }
     }
 
     /**
-     * @Given /^I change the quantity of the "([^"]*)" in the cart to "([^"]*)"$/
-     * @param $productName
-     * @param $value
+     * @Given /^I am on the cart page$/
+     * @throws \Exception
      */
-    public function iUpdateTheQuantityOfTheProductInTheCheckoutTo($productName, $value)
+    public function iGoToTheCartPage()
     {
-        $xpath = "a[text($productName)]../../../input[name*=\"qty\"][type=\"text\"]";
-        // Set original quantity before changing for comparison
-        $this->productQty = $this->getSession()->getPage()->find('css', $xpath)->getValue();
-
-        // Change the quantity input value
-        $this->getSession()->getPage()->find('xpath', $xpath)->setValue($value);
-        $this->getSession()->getPage()->find('xpath', '//a[contains(text(), "Update Shopping Cart")]')->click();
+        $this->visitPath('/checkout/cart');
     }
 
     /**
-     * @Then /^I should see the quantity of the "([^"]*)" has changed$/
-     * @param $productName
-     * @return bool
-     * @throws ExpectationException
+     * @Then /^I should see item has been added to the cart$/
      */
-    public function iShouldSeeTheQuantityOfTheProductHasChanged($productName)
+    public function iShouldSeeItemHasBeenAddedToTheCart()
     {
-        $xpath = "a[text($productName)]../../../input[name*=\"qty\"][type=\"text\"]";
-        $currentQty = $this->getSession()->getPage()->find('css', $xpath)->getValue();
-        if($this->productQty !== $currentQty){
-            return true;
-        }else{
-            throw new ExpectationException('The quantity has not changed.', $this->getSession()->getDriver());
-        }
+        $this->_html->waitformilliseconds(500);
+        $this->getSession()->getPage()->find('css', 'div.message-success');
     }
+
 
     /**
      * @Given I add a different product
      */
-    public function iAddADifferentProduct(){
+    public function iAddADifferentProduct()
+    {
         $altProductUri = AbstractMagentoContext::$_magentoSetting['altProduct'];
         $this->iGoToTheProductPage($altProductUri);
 
@@ -148,9 +144,28 @@ class CartContext extends AbstractMagentoContext implements Context, SnippetAcce
     public function iAddARandomProductToMyWishList()
     {
         $productsOnPage = $this->_mink->getSession()->getPage()->findAll('css', 'li.item.products.product-item');
-        $randSelection = '//ol[@class=\'products list items product-items\']//li[' . random_int(0,count($productsOnPage)) . ']//a[@title=\'Add to Wish List\']';
+        $randSelection = '//ol[@class=\'products list items product-items\']//li[' . random_int(0, count($productsOnPage)) . ']//a[@title=\'Add to Wish List\']';
         var_dump($randSelection);
         $this->_mink->getSession()->getPage()->find('xpath', $randSelection)->click();
+    }
+
+
+    /**
+     * @Then /^I should see the quantity of the test product has changed$/
+     * @param $productName
+     * @return bool
+     * @throws ExpectationException
+     */
+    public function iShouldSeeTheQuantityOfTheTestProductHasChanged()
+    {
+        $productName = $this->testProductName;
+        $xpath = "//input[@data-cart-item-id='" . $productName . "' and @title='Qty']";
+        $currentQty = $this->getSession()->getPage()->find('xpath', $xpath)->getValue();
+        if ($this->productQty !== $currentQty) {
+            return true;
+        } else {
+            throw new ExpectationException('The quantity has not changed.', $this->getSession()->getDriver());
+        }
     }
 
 

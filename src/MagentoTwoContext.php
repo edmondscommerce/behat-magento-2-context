@@ -30,8 +30,8 @@ class MagentoTwoContext extends AbstractMagentoContext
                 throw new \Exception("Unknown page type $page");
         }
 
-        $currentUrl   = $this->getSession()->getCurrentUrl();
-        $baseUrl      = $this->getMinkParameter('base_url');
+        $currentUrl = $this->getSession()->getCurrentUrl();
+        $baseUrl = $this->getMinkParameter('base_url');
         $sanitizedUrl = '/' . str_replace($baseUrl, '', $currentUrl);
         if ($sanitizedUrl !== $expectedUrl) {
             throw new \Exception("Expected to be on $expectedUrl\n Actually on $sanitizedUrl");

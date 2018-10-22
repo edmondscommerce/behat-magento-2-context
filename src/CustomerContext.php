@@ -3,6 +3,7 @@
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
+
 class CustomerContext extends AbstractMagentoContext
 {
     protected $_customerEmail;
@@ -12,10 +13,10 @@ class CustomerContext extends AbstractMagentoContext
 
     public function __construct()
     {
-        if(isset(self::$_magentoSetting['testCustomerEmail'])){
+        if (isset(self::$_magentoSetting['testCustomerEmail'])) {
             $this->_customerEmail = self::$_magentoSetting['testCustomerEmail'];
         }
-        if(isset(self::$_magentoSetting['testCustomerPassword'])){
+        if (isset(self::$_magentoSetting['testCustomerPassword'])) {
             $this->_customerPass = self::$_magentoSetting['testCustomerPassword'];
         }
     }
@@ -31,14 +32,13 @@ class CustomerContext extends AbstractMagentoContext
     }
 
 
-
     /**
      * @Given I should be logged in
      * @throws \Exception
      */
     public function iShouldBeLoggedIn()
     {
-        $this->visitPath('/checkout/account/index');
+        $this->visitPath('/customer/account/index');
         $this->_html->findAllOrFail('xpath', $this->signOutXPath);
     }
 
@@ -57,7 +57,7 @@ class CustomerContext extends AbstractMagentoContext
     }
 
     /**
-    * @Given there is a user with the following details$/
+     * @Given there is a user with the following details$/
      */
     public function thereIsAUserWithTheFollowingDetails(TableNode $table)
     {
@@ -82,8 +82,9 @@ class CustomerContext extends AbstractMagentoContext
      * @param $password
      * @throws \Exception
      */
-    public function iLogIn($email, $password){
-        if(!isset($email) && !isset($password)){
+    public function iLogIn($email, $password)
+    {
+        if (!isset($email) && !isset($password)) {
             throw new \Exception('Please update the behat.yml file to include customerEmail and customerPass under magentoSettings.');
         }
         $this->visitPath('customer/account/index');

@@ -1,4 +1,5 @@
 <?php
+
 namespace EdmondsCommerce\BehatMagentoTwoContext;
 
 use Behat\Behat\Context\Context;
@@ -9,6 +10,7 @@ class CheckoutContext extends AbstractMagentoContext
 {
     const CHECKOUT_SUCCESS_PAGE_TITLE_SETTING = 'successPageTitle';
     const CHECKOUT_SUCESS_PAGE_TITLE_DEFAULT = 'Success Page';
+
     /**
      * @Then I go to the checkout
      */
@@ -24,7 +26,7 @@ class CheckoutContext extends AbstractMagentoContext
     public function iFillInAGuestCheckoutShipping()
     {
         $this->iWaitForMagento2AjaxToFinish();
-        $this->getSession()->getPage()->find('css','#customer-email')->setValue('behatguest@example.com');
+        $this->getSession()->getPage()->find('css', '#customer-email')->setValue('behatguest@example.com');
         $shippingForm = $this->getSession()->getPage()->find('css', '#co-shipping-form');
 
         $inputs = $shippingForm->findAll('css', 'input');
@@ -67,6 +69,13 @@ class CheckoutContext extends AbstractMagentoContext
     }
 
 
+    /**
+     * @Given /^I press the add to cart button$/
+     */
+    public function iPressTheAddToCartButton()
+    {
+        $this->getSession()->getPage()->find('css', '#product-addtocart-button')->click();
+    }
 
 
     /**
@@ -76,7 +85,7 @@ class CheckoutContext extends AbstractMagentoContext
     {
         $this->iWaitForMagento2AjaxToFinish();
         $xpath = '//form[@id=\'co-shipping-method-form\']';
-        $this->getSession()->getPage()->find('xpath',$xpath)->submit();
+        $this->getSession()->getPage()->find('xpath', $xpath)->submit();
         $this->iWaitForMagento2AjaxToFinish();
     }
 
@@ -87,11 +96,11 @@ class CheckoutContext extends AbstractMagentoContext
      */
     public function iShouldSeeTheOrderSuccess()
     {
-        $this->assertSession()->pageTextContains('Your order # is');
+        $this->assertSession()->pageTextContains('Your order #');
 
         $elements = $this->getSession()->getPage()->findAll('css', '.checkout-success');
 
-        if($elements  < 0) {
+        if ($elements < 0) {
             throw new \Exception('The success page is not showing');
         }
 
@@ -108,8 +117,7 @@ class CheckoutContext extends AbstractMagentoContext
 
     private function getSucessPageTitle()
     {
-        if (isset(self::$_magentoSetting[self::CHECKOUT_SUCCESS_PAGE_TITLE_SETTING]))
-        {
+        if (isset(self::$_magentoSetting[self::CHECKOUT_SUCCESS_PAGE_TITLE_SETTING])) {
             return self::$_magentoSetting[self::CHECKOUT_SUCCESS_PAGE_TITLE_SETTING];
         }
         return self::CHECKOUT_SUCESS_PAGE_TITLE_DEFAULT;
